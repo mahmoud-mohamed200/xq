@@ -140,7 +140,7 @@ async function startCamera() {
         els.cameraVideo.srcObject = stream;
     } catch (err) {
         console.error('Camera error:', err);
-        alert('Could not access camera. Please check permissions.');
+        alert('تعذر الوصول إلى الكاميرا. يرجى التحقق من الصلاحيات.');
     }
 }
 
@@ -209,24 +209,24 @@ async function analyzeFromFile(file) {
     if (els.userSkin.value) formData.append('skin_type', els.userSkin.value);
 
     try {
-        updateLoadingStep('Sending image to AI model...');
+        updateLoadingStep('جاري إرسال الصورة إلى الذكاء الاصطناعي...');
         const res = await fetch('/api/detect', {
             method: 'POST',
             body: formData
         });
 
-        updateLoadingStep('Processing detections...');
+        updateLoadingStep('جاري معالجة النتائج...');
         const data = await res.json();
 
         if (data.success) {
             showResults(data);
         } else {
-            alert('Detection failed: ' + (data.error || 'Unknown error'));
+            alert('فشل التحليل: ' + (data.error || 'خطأ غير معروف'));
             hideLoading();
         }
     } catch (err) {
         console.error('Error:', err);
-        alert('Failed to analyze image. Is the server running?');
+        alert('فشل تحليل الصورة. هل الخادم يعمل؟');
         hideLoading();
     }
 }
@@ -235,7 +235,7 @@ async function analyzeFromBase64(dataUrl) {
     showLoading();
 
     try {
-        updateLoadingStep('Sending image to AI model...');
+        updateLoadingStep('جاري إرسال الصورة إلى الذكاء الاصطناعي...');
         const payload = { image: dataUrl };
         if (els.userAge.value) payload.age = els.userAge.value;
         if (els.userSkin.value) payload.skin_type = els.userSkin.value;
@@ -246,18 +246,18 @@ async function analyzeFromBase64(dataUrl) {
             body: JSON.stringify(payload)
         });
 
-        updateLoadingStep('Processing detections...');
+        updateLoadingStep('جاري معالجة النتائج...');
         const data = await res.json();
 
         if (data.success) {
             showResults(data);
         } else {
-            alert('Detection failed: ' + (data.error || 'Unknown error'));
+            alert('فشل التحليل: ' + (data.error || 'خطأ غير معروف'));
             hideLoading();
         }
     } catch (err) {
         console.error('Error:', err);
-        alert('Failed to analyze image. Is the server running?');
+        alert('فشل تحليل الصورة. هل الخادم يعمل؟');
         hideLoading();
     }
 }
@@ -266,7 +266,7 @@ async function analyzeFromUrl(url) {
     showLoading();
 
     try {
-        updateLoadingStep('Fetching image from URL...');
+        updateLoadingStep('جاري جلب الصورة من الرابط...');
         const payload = { url: url };
         if (els.userAge.value) payload.age = els.userAge.value;
         if (els.userSkin.value) payload.skin_type = els.userSkin.value;
@@ -277,7 +277,7 @@ async function analyzeFromUrl(url) {
             body: JSON.stringify(payload)
         });
 
-        updateLoadingStep('Processing detections...');
+        updateLoadingStep('جاري معالجة النتائج...');
         const data = await res.json();
 
         if (data.success) {
@@ -285,12 +285,12 @@ async function analyzeFromUrl(url) {
             state.imageDataUrl = url;
             showResults(data);
         } else {
-            alert('Detection failed: ' + (data.error || 'Unknown error'));
+            alert('فشل التحليل: ' + (data.error || 'خطأ غير معروف'));
             hideLoading();
         }
     } catch (err) {
         console.error('Error:', err);
-        alert('Failed to analyze image. Is the server running?');
+        alert('فشل تحليل الصورة. هل الخادم يعمل؟');
         hideLoading();
     }
 }
@@ -394,8 +394,8 @@ function renderConditions(summary) {
         els.conditionsList.innerHTML = `
             <div style="text-align:center; padding:40px; color: var(--text-muted); grid-column: 1/-1;">
                 <p style="font-size: 2rem; margin-bottom: 12px;">✨</p>
-                <p style="font-weight: 600; color: var(--text-primary);">No skin issues detected!</p>
-                <p>Your skin looks healthy. Keep up the great routine.</p>
+                <p style="font-weight: 600; color: var(--text-primary);">لم يتم اكتشاف أي مشاكل في البشرة!</p>
+                <p>بشرتك تبدو صحية. حافظ على روتينك الرائع.</p>
             </div>
         `;
         return;
@@ -413,7 +413,7 @@ function renderConditions(summary) {
                     </div>
                     <span class="condition-confidence">${info.max_confidence}%</span>
                 </div>
-                <div class="condition-count">${info.count} detection${info.count > 1 ? 's' : ''} • ${info.severity} severity</div>
+                <div class="condition-count">${info.count} اكتشاف • الحدة: ${info.severity}</div>
                 <div class="confidence-bar">
                     <div class="confidence-fill" style="background:${info.color}; width: 0%;" data-width="${info.max_confidence}%"></div>
                 </div>
@@ -478,7 +478,7 @@ function renderTips(summary) {
     if (!summary || Object.keys(summary).length === 0) {
         els.tipsList.innerHTML = `
             <div style="text-align:center; padding:30px; color: var(--text-muted); grid-column: 1/-1;">
-                <p>No specific recommendations at this time. Keep up the great skincare routine!</p>
+                <p>لا توجد توصيات محددة في هذا الوقت. حافظ على روتينك الرائع للعناية بالبشرة!</p>
             </div>
         `;
         return;

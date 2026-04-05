@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XQ PHARMA AI Coach — Skin Problem Detection Agent</title>
+    <title>المدرب الذكي لـ XQ PHARMA — كاشف مشاكل البشرة</title>
     <meta name="description"
         content="AI-powered skin problem detection using advanced computer vision. Detect acne, wrinkles, dark spots, and more instantly.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,12 +25,6 @@
     <!-- Header -->
     <header id="app-header">
         <div class="header-inner">
-            <div class="logo">
-                <div>
-                    <h1>XQ PHARMA AI Coach</h1>
-                    <span class="logo-subtitle">Skin Detection Agent</span>
-                </div>
-            </div>
             <div class="logo-icon">
                 <img src="xq-logo.avif" alt="XQ PHARMA Logo" style="height: 48px; width: auto; display: block;">
             </div>
@@ -42,8 +36,8 @@
         <!-- Upload Section -->
         <section id="upload-section" class="glass-card">
             <div class="section-header">
-                <h2>Analyze Your Skin</h2>
-                <p>Upload a photo or use your camera for instant AI-powered skin analysis</p>
+                <h2>حلل بشرتك</h2>
+                <p>قم برفع صورة أو استخدام الكاميرا لتحليل ذكي وفوري لبشرتك</p>
             </div>
 
             <!-- User Profile Fields -->
@@ -79,7 +73,7 @@
                         <polyline points="17 8 12 3 7 8" />
                         <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
-                    Upload Image
+                    رفع صورة
                 </button>
                 <button class="tab-btn" data-tab="camera" id="tab-camera">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -87,7 +81,7 @@
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                         <circle cx="12" cy="13" r="4" />
                     </svg>
-                    Camera
+                    الكاميرا
                 </button>
                 <button class="tab-btn" data-tab="url" id="tab-url">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -95,7 +89,7 @@
                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                     </svg>
-                    URL
+                    رابط
                 </button>
             </div>
 
@@ -111,8 +105,8 @@
                                 <polyline points="21 15 16 10 5 21" />
                             </svg>
                         </div>
-                        <p class="drop-text">Drag & drop your image here</p>
-                        <p class="drop-hint">or click to browse • PNG, JPG, WEBP</p>
+                        <p class="drop-text">اسحب وأفلت صورتك هنا</p>
+                        <p class="drop-hint">أو اضغط لتصفح الملفات • PNG, JPG, WEBP</p>
                         <input type="file" id="file-input" accept="image/*" hidden>
                     </div>
                 </div>
@@ -137,9 +131,9 @@
             <!-- URL Tab -->
             <div class="tab-content" id="content-url">
                 <div class="url-input-group">
-                    <input type="url" id="url-input" placeholder="Paste image URL here..." class="url-input">
+                    <input type="url" id="url-input" placeholder="ضع رابط الصورة هنا..." class="url-input">
                     <button class="btn btn-primary btn-analyze-url" id="btn-url-analyze">
-                        Analyze
+                        تحليل
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12" />
@@ -162,7 +156,7 @@
                             <line x1="18" y1="6" x2="6" y2="18" />
                             <line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
-                        Clear
+                        مسح
                     </button>
                     <button class="btn btn-primary btn-glow" id="btn-analyze">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -170,7 +164,7 @@
                             <circle cx="11" cy="11" r="8" />
                             <line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
-                        Analyze Skin
+                        تحليل البشرة
                     </button>
                 </div>
             </div>
@@ -188,8 +182,8 @@
                         <div class="dna-dot"></div>
                     </div>
                 </div>
-                <h3>Analyzing your skin...</h3>
-                <p class="loading-step" id="loading-step">Running AI detection model</p>
+                <h3>جاري تحليل بشرتك...</h3>
+                <p class="loading-step" id="loading-step">يتم الآن تشغيل الذكاء الاصطناعي</p>
             </div>
         </section>
 
@@ -212,24 +206,24 @@
                     </svg>
                     <div class="score-value">
                         <span class="score-number" id="score-number">0</span>
-                        <span class="score-label">Health Score</span>
+                        <span class="score-label">مؤشر الصحة</span>
                     </div>
                 </div>
                 <div class="score-details">
-                    <h3 id="score-title">Skin Analysis Complete</h3>
+                    <h3 id="score-title">اكتمل تحليل البشرة</h3>
                     <p id="score-recommendation">--</p>
                     <div class="score-stats">
                         <div class="stat">
                             <span class="stat-value" id="stat-detections">0</span>
-                            <span class="stat-label">Detections</span>
+                            <span class="stat-label">المكتشفات</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value" id="stat-conditions">0</span>
-                            <span class="stat-label">Conditions</span>
+                            <span class="stat-label">الحالات</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value" id="stat-time">0ms</span>
-                            <span class="stat-label">Inference</span>
+                            <span class="stat-label">التوقيت</span>
                         </div>
                     </div>
                 </div>
@@ -238,7 +232,7 @@
             <!-- Detected Conditions -->
             <div class="glass-card" id="conditions-card">
                 <div class="section-header">
-                    <h2>Detected Conditions</h2>
+                    <h2>الحالات المكتشفة</h2>
                 </div>
                 <div id="conditions-list" class="conditions-grid">
                     <!-- Dynamically populated -->
@@ -248,7 +242,7 @@
             <!-- Detection Map -->
             <div class="glass-card" id="detection-map-card">
                 <div class="section-header">
-                    <h2>Detection Map</h2>
+                    <h2>خريطة الاكتشاف</h2>
                 </div>
                 <div class="detection-map-wrapper">
                     <img id="result-image" alt="Detection result">
@@ -259,7 +253,7 @@
             <!-- Skincare Tips -->
             <div class="glass-card" id="tips-card">
                 <div class="section-header">
-                    <h2>🧴 Skincare Recommendations</h2>
+                    <h2>🧴 نصائح للعناية بالبشرة</h2>
                 </div>
                 <div id="tips-list" class="tips-grid">
                     <!-- Dynamically populated -->
@@ -284,16 +278,19 @@
                     <polyline points="1 20 1 14 7 14" />
                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                 </svg>
-                Start New Analysis
+                بدء تحليل جديد
             </button>
         </section>
     </main>
 
     <!-- Footer -->
     <footer id="app-footer">
-        <p>Powered by <strong>Roboflow</strong> Multi-Class Computer Vision Model</p>
-        <p class="footer-small">This tool is for informational purposes only. Not a substitute for professional medical
-            advice.</p>
+        <p>مدعوم من نماذج <strong>Roboflow</strong> للرؤية الحاسوبية</p>
+        <p class="footer-small">هذه الأداة مخصصة للأغراض المعلوماتية فقط. ولا تعتبر بديلاً عن الاستشارة الطبية المتخصصة.</p>
+        <p class="footer-small" style="margin-top: 8px;">
+            تم التطوير بواسطة <a href="https://xqpharma.net/en" target="_blank"
+                style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">Mahmoud Bebo</a>
+        </p>
     </footer>
 
     <script src="app.js"></script>
