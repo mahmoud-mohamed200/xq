@@ -136,6 +136,12 @@ function showPreview(src) {
 
 // ===== Camera =====
 async function startCamera() {
+    // Check for Secure Context (HTTPS or Localhost)
+    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        alert('❌ الكاميرا لا تعمل إلا عبر اتصال آمن (HTTPS). يرجى استخدام localhost أو شهادة SSL.');
+        return;
+    }
+
     try {
         const stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }
@@ -143,8 +149,12 @@ async function startCamera() {
         state.cameraStream = stream;
         els.cameraVideo.srcObject = stream;
     } catch (err) {
-        console.error('Camera error:', err);
-        alert('تعذر الوصول إلى الكاميرا. يرجى التحقق من الصلاحيات.');
+        console.error('Camera Access Error:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            alert('🚫 تم رفض الإذن! يرجى السماح للمتصفح بالوصول إلى الكاميرا من إعدادات القفل في شريط العنوان.');
+        } else {
+            alert('⚠️ تعذر الوصول إلى الكاميرا. تأكد من أنها غير مستخدمة في تطبيق آخر.');
+        }
     }
 }
 
