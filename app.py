@@ -136,6 +136,28 @@ def detect_url():
         return jsonify({"error": str(e), "success": False}), 500
 
 
+@app.route("/api/feedback", methods=["POST"])
+def feedback():
+    """
+    Receive user feedback (rating and comments).
+    """
+    data = request.get_json()
+    if not data or "rating" not in data:
+        return jsonify({"error": "Rating is required", "success": False}), 400
+
+    rating = data.get("rating")
+    comment = data.get("comment", "")
+    
+    # Log the feedback (in a real app, this would go to a database or email)
+    print(f"\n[USER FEEDBACK] Rating: {rating}/5 | Comment: {comment}")
+    
+    # Trigger webhook with feedback if configured
+    if EXTERNAL_WEBHOOK_URL:
+        threading.Thread(target=_fire_webhook, args=({"type": "feedback", "rating": rating, "comment": comment},)).start()
+
+    return jsonify({"success": True, "message": "Feedback received!"})
+
+
 @app.route("/api/history", methods=["GET"])
 def history():
     """Return detection history."""

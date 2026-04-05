@@ -10,7 +10,8 @@ const state = {
     imageDataUrl: null,
     cameraStream: null,
     isAnalyzing: false,
-    results: null
+    results: null,
+    rating: 0
 };
 
 // ===== DOM Elements =====
@@ -56,7 +57,12 @@ const els = {
     foodContent: $('#food-content'),
     btnNewScan: $('#btn-new-scan'),
     // Sections
-    uploadSection: $('#upload-section')
+    uploadSection: $('#upload-section'),
+    // Rating
+    ratingStars: $$('.star-item'),
+    btnSubmitRating: $('#btn-submit-rating'),
+    ratingComment: $('#rating-comment'),
+    ratingMessage: $('#rating-message')
 };
 
 // ===== Tab Switching =====
@@ -476,8 +482,66 @@ els.btnNewScan.addEventListener('click', () => {
     els.scoreCircle.style.strokeDashoffset = '326.73';
     els.scoreNumber.textContent = '0';
 
+    // Reset Rating
+    state.rating = 0;
+    els.ratingStars.forEach(s => s.classList.remove('selected'));
+    els.ratingComment.value = '';
+    els.ratingComment.classList.remove('hidden');
+    els.btnSubmitRating.classList.remove('hidden');
+    els.ratingMessage.classList.add('hidden');
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ===== Rating Logic =====
+els.ratingStars.forEach(star => {
+    star.addEventListener('click', () => {
+        const value = parseInt(star.dataset.value);
+        state.rating = value;
+        
+        // Update UI
+        els.ratingStars.forEach(s => {
+            const sVal = parseInt(s.dataset.value);
+            s.classList.toggle('selected', sVal <= value);
+        });
+    });
+});
+
+els.btnSubmitRating.addEventListener('click', async () => {
+    if (state.rating === 0) {
+        alert('يرجى اختيار تقييم بالنجوم أولاً');
+        return;
+    }
+
+    const comment = els.ratingComment.value.trim();
+    
+    try {
+        els.btnSubmitRating.disabled = true;
+        els.btnSubmitRating.textContent = 'جاري الإرسال...';
+
+        const res = await fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                rating: state.rating,
+                comment: comment
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            els.ratingComment.classList.add('hidden');
+            els.btnSubmitRating.classList.add('hidden');
+            els.ratingMessage.classList.remove('hidden');
+        }
+    } catch (err) {
+        console.error('Feedback error:', err);
+        alert('فشل إرسال التقييم. حاول مرة أخرى.');
+    } finally {
+        els.btnSubmitRating.disabled = false;
+        els.btnSubmitRating.textContent = 'إرسال التقييم';
+    }
 });
 
 // ===== Init =====
