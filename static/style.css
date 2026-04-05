@@ -145,12 +145,6 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: professional-glow 4s ease-in-out infinite;
-}
-
-@keyframes professional-glow {
-    0%, 100% { filter: drop-shadow(0 0 5px rgba(37, 99, 235, 0.2)); }
-    50% { filter: drop-shadow(0 0 10px rgba(37, 99, 235, 0.4)); }
 }
 
 .logo h1 {
