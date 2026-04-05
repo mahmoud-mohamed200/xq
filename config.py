@@ -91,7 +91,7 @@ SKIN_CONDITIONS = {
         ]
     },
     "Eyebags": {
-        "name_ar": "انتفاخ تحت العين",
+        "name_ar": "هالات سوداء",
         "color": "#9370DB",
         "icon": "👁️",
         "severity": "خفيف",

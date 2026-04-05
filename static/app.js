@@ -29,9 +29,7 @@ const els = {
     cameraVideo: $('#camera-video'),
     cameraCanvas: $('#camera-canvas'),
     btnCapture: $('#btn-capture'),
-    // URL
-    urlInput: $('#url-input'),
-    btnUrlAnalyze: $('#btn-url-analyze'),
+
     // Preview
     previewContainer: $('#preview-container'),
     previewImage: $('#preview-image'),
@@ -168,18 +166,7 @@ els.btnCapture.addEventListener('click', () => {
     showPreview(dataUrl);
 });
 
-// ===== URL Analysis =====
-els.btnUrlAnalyze.addEventListener('click', () => {
-    const url = els.urlInput.value.trim();
-    if (!url) return;
-    analyzeFromUrl(url);
-});
 
-els.urlInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        els.btnUrlAnalyze.click();
-    }
-});
 
 // ===== Clear =====
 els.btnClear.addEventListener('click', () => {
@@ -262,38 +249,7 @@ async function analyzeFromBase64(dataUrl) {
     }
 }
 
-async function analyzeFromUrl(url) {
-    showLoading();
 
-    try {
-        updateLoadingStep('جاري جلب الصورة من الرابط...');
-        const payload = { url: url };
-        if (els.userAge.value) payload.age = els.userAge.value;
-        if (els.userSkin.value) payload.skin_type = els.userSkin.value;
-
-        const res = await fetch('/api/detect/url', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        updateLoadingStep('جاري معالجة النتائج...');
-        const data = await res.json();
-
-        if (data.success) {
-            // Set preview image from URL
-            state.imageDataUrl = url;
-            showResults(data);
-        } else {
-            alert('فشل التحليل: ' + (data.error || 'خطأ غير معروف'));
-            hideLoading();
-        }
-    } catch (err) {
-        console.error('Error:', err);
-        alert('فشل تحليل الصورة. هل الخادم يعمل؟');
-        hideLoading();
-    }
-}
 
 // ===== Loading =====
 function showLoading() {
@@ -513,7 +469,7 @@ els.btnNewScan.addEventListener('click', () => {
     els.uploadSection.classList.remove('hidden');
     els.previewContainer.classList.add('hidden');
     els.fileInput.value = '';
-    els.urlInput.value = '';
+    els.fileInput.value = '';
 
     // Reset score circle
     els.scoreCircle.style.transition = 'none';
