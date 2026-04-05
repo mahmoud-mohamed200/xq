@@ -233,7 +233,8 @@ class SkinDetectionAgent:
                 "icon": condition_info.get("icon", "❓"),
                 "severity": condition_info.get("severity", "unknown"),
                 "description": condition_info.get("description", ""),
-                "tips": condition_info.get("tips", [])
+                "tips": condition_info.get("tips", []),
+                "name_ar": condition_info.get("name_ar", cls)
             }
             detections.append(detection)
 
@@ -277,7 +278,8 @@ class SkinDetectionAgent:
                     "max_confidence": condition_max_confidence.get(d["class"], 0),
                     "icon": d["icon"],
                     "color": d["color"],
-                    "severity": d["severity"]
+                    "severity": d["severity"],
+                    "name_ar": d.get("name_ar", d["class"])
                 }
 
         # Generate Dynamic LLM Diet Plan
