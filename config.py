@@ -26,9 +26,10 @@ OVERLAP_THRESHOLD = 30     # NMS overlap threshold percentage
 # Skin condition classes and their metadata
 SKIN_CONDITIONS = {
     "Acne": {
+        "name_ar": "حب الشباب",
         "color": "#FF4D4D",
         "icon": "🔴",
-        "severity": "moderate",
+        "severity": "متوسط",
         "description": "حالة جلدية التهابية تسبب البثور والعيوب في البشرة.",
         "tips": [
             "حافظي على نظافة وجهك باستخدام منظف لطيف",
@@ -38,9 +39,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Blackheads": {
+        "name_ar": "رؤوس سوداء",
         "color": "#4A4A4A",
         "icon": "⚫",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "رؤوس سوداء مفتوحة ناتجة عن انسداد بصيلات الشعر.",
         "tips": [
             "استخدمي منتجات تحتوي على حمض الساليسيليك",
@@ -50,9 +52,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Dark-Spots": {
+        "name_ar": "بقع داكنة",
         "color": "#8B6914",
         "icon": "🟤",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "مناطق تصبغ داكنة ناتجة عن أضرار أشعة الشمس أو علامات ما بعد الالتهاب.",
         "tips": [
             "استخدمي واقي الشمس يومياً (SPF 30+)",
@@ -62,9 +65,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Dry-Skin": {
+        "name_ar": "بشرة جافة",
         "color": "#D2B48C",
         "icon": "🏜️",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "بشرة تفتقر للترطيب، تبدو متقشرة أو خشنة.",
         "tips": [
             "استخدمي مرطب غني وعميق",
@@ -74,9 +78,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Englarged-Pores": {
+        "name_ar": "مسام واسعة",
         "color": "#FF8C00",
         "icon": "🔵",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "المسام الواسعة وتظهر بشكل خاص على الأنف والخدين.",
         "tips": [
             "استخدمي النياسيناميد لتقليل مظهر المسام",
@@ -86,9 +91,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Eyebags": {
+        "name_ar": "انتفاخ تحت العين",
         "color": "#9370DB",
         "icon": "👁️",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "انتفاخ أو تورم تحت العينين (الهالات والأكياس).",
         "tips": [
             "احصلي على قسط كافٍ من النوم (7-9 ساعات)",
@@ -98,9 +104,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Oily-Skin": {
+        "name_ar": "بشرة دهنية",
         "color": "#FFD700",
         "icon": "✨",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "زيادة في الإفرازات الدهنية مما يسبب مظهر لامع للبشرة.",
         "tips": [
             "استخدمي منظف رغوي لطيف",
@@ -110,9 +117,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Skin-Redness": {
+        "name_ar": "احمرار البشرة",
         "color": "#DC143C",
         "icon": "🔺",
-        "severity": "moderate",
+        "severity": "متوسط",
         "description": "التهاب أو تهيج يسبب بقع حمراء على البشرة.",
         "tips": [
             "استخدمي منتجات لطيفة وخالية من العطور",
@@ -122,9 +130,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Whiteheads": {
+        "name_ar": "رؤوس بيضاء",
         "color": "#F5F5DC",
         "icon": "⚪",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "رؤوس بيضاء مغلقة محتبسة تحت سطح البشرة.",
         "tips": [
             "استخدمي المنتجات التي تحتوي على مشتقات فيتامين أ (الريتينويد)",
@@ -134,9 +143,10 @@ SKIN_CONDITIONS = {
         ]
     },
     "Wrinkles": {
+        "name_ar": "تجاعيد",
         "color": "#BC8F8F",
         "icon": "〰️",
-        "severity": "mild",
+        "severity": "خفيف",
         "description": "خطوط دقيقة وتجاعيد تشكلت بسبب التقدم في العمر أو التعرض للشمس.",
         "tips": [
             "استخدمي الريتينول بانتظام ليلاً",

@@ -409,7 +409,7 @@ function renderConditions(summary) {
                 <div class="condition-header">
                     <div class="condition-name">
                         <span class="condition-icon-dot" style="background:${info.color}"></span>
-                        ${name.replace(/-/g, ' ')}
+                        ${info.name_ar || name.replace(/-/g, ' ')}
                     </div>
                     <span class="condition-confidence">${info.max_confidence}%</span>
                 </div>
@@ -491,7 +491,7 @@ function renderTips(summary) {
             <div class="tip-card animate-in">
                 <div class="tip-card-title">
                     <span>${info.icon}</span>
-                    ${name.replace(/-/g, ' ')}
+                    ${info.name_ar || name.replace(/-/g, ' ')}
                 </div>
                 <p class="tip-card-description">${info.description}</p>
                 <ul class="tip-list">
