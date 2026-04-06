@@ -194,12 +194,15 @@ class SkinDetectionAgent:
         
         try:
             response = self._llm.models.generate_content(
-                model='gemini-2.5-flash',
+                model='gemini-1.5-flash',
                 contents=prompt
             )
             return response.text.strip()
         except Exception as e:
-            return f"حدث خطأ أثناء الاتصال بالذكاء الاصطناعي: {str(e)}"
+            error_str = str(e)
+            if '429' in error_str or 'RESOURCE_EXHAUSTED' in error_str:
+                return "⚠️ تم تجاوز الحد اليومي لطلبات الذكاء الاصطناعي. يرجى المحاولة مرة أخرى غداً أو ترقية خطة Gemini API."
+            return f"حدث خطأ أثناء الاتصال بالذكاء الاصطناعي: {error_str}"
 
     def _analyze_results(self, raw_result: dict, inference_time: float, age: str = None, skin_type: str = None) -> dict:
         """
