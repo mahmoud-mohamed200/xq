@@ -247,15 +247,28 @@ class SkinDetectionAgent:
         total_detections = len(detections)
         unique_conditions = list(condition_counts.keys())
 
-        # Calculate overall skin health score
-        severity_scores = {"mild": 0.9, "moderate": 0.7, "severe": 0.4}
+        # Calculate overall skin health score (Base 100 deduction system)
+        severity_penalties = {
+            "خفيف": 1.5,      # Mild
+            "متوسط": 4.5,     # Moderate
+            "شديد": 10.0,     # Severe
+            "unknown": 2.5    # Fallback
+        }
+        
         if detections:
-            avg_severity = sum(
-                severity_scores.get(d["severity"], 0.5) for d in detections
-            ) / len(detections)
-            health_score = max(10, min(100, int(avg_severity * 100 - total_detections * 3)))
+            total_penalty = 0
+            for d in detections:
+                # Deduction = severity_weight * confidence_factor
+                conf_factor = d["confidence"] / 100.0
+                penalty = severity_penalties.get(d["severity"], 2.5) * conf_factor
+                total_penalty += penalty
+            
+            # Additional penalty for variety of conditions (diversity of issues)
+            total_penalty += (len(unique_conditions) - 1) * 3 if len(unique_conditions) > 1 else 0
+            
+            health_score = max(10, min(100, int(100 - total_penalty)))
         else:
-            health_score = 95
+            health_score = 100
 
         # Generate overall recommendation
         if health_score >= 80:
