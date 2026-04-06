@@ -14,7 +14,7 @@ ROBOFLOW_PROJECT = "skin-problem-detection-relabel-clean3-smqda"
 ROBOFLOW_MODEL_VERSION = 3
 ROBOFLOW_API_URL = "https://detect.roboflow.com"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-EXTERNAL_WEBHOOK_URL = "https://webhook.site/2d1f686c-eefa-43af-9a2b-12549c922aeb"
+EXTERNAL_WEBHOOK_URL = "https://webhook.site/6a2bd2f6-ba26-4405-8eb7-99bdbcde46e1"
 
 # Model ID for inference SDK
 MODEL_ID = f"{ROBOFLOW_PROJECT}/{ROBOFLOW_MODEL_VERSION}"
