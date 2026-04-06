@@ -11,7 +11,8 @@ const state = {
     cameraStream: null,
     isAnalyzing: false,
     results: null,
-    rating: 0
+    rating: 0,
+    currentResultId: null
 };
 
 // ===== DOM Elements =====
@@ -288,6 +289,7 @@ function updateLoadingStep(text) {
 // ===== Results =====
 function showResults(data) {
     state.results = data;
+    state.currentResultId = data.id;
     els.loadingSection.classList.add('hidden');
     els.resultsSection.classList.remove('hidden');
 
@@ -534,6 +536,7 @@ els.btnSubmitRating.addEventListener('click', async () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                result_id: state.currentResultId,
                 rating: state.rating,
                 comment: comment
             })

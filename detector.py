@@ -8,6 +8,7 @@ import json
 import base64
 import time
 import requests
+import uuid
 from google import genai
 from datetime import datetime
 from config import (
@@ -24,6 +25,7 @@ class SkinDetectionAgent:
         """Initialize the detection agent."""
         self.api_url = f"{ROBOFLOW_API_URL}/{MODEL_ID}"
         self.detection_history = []
+        self.results_cache = {}  # Store full results for feedback matching
         if GEMINI_API_KEY:
             self._llm = genai.Client(api_key=GEMINI_API_KEY)
         else:
@@ -300,7 +302,10 @@ class SkinDetectionAgent:
         # Generate Dynamic LLM Diet Plan
         llm_diet_plan = self._generate_diet_plan(unique_conditions, age, skin_type)
 
-        return {
+        result_id = str(uuid.uuid4())
+        
+        final_result = {
+            "id": result_id,
             "success": True,
             "inference_time_ms": inference_time,
             "image": image_info,
@@ -319,6 +324,10 @@ class SkinDetectionAgent:
                 "health_score": health_score
             }
         }
+        
+        # Cache the result for future feedback
+        self.results_cache[result_id] = final_result
+        return final_result
 
     def get_history(self) -> list:
         """Return detection history."""
@@ -327,3 +336,20 @@ class SkinDetectionAgent:
     def clear_history(self):
         """Clear detection history."""
         self.detection_history = []
+        self.results_cache = {}
+
+    def update_result_with_feedback(self, result_id: str, rating: int, comment: str) -> dict:
+        """Add user feedback to an existing result and return the updated result."""
+        if result_id not in self.results_cache:
+            return None
+        
+        result = self.results_cache[result_id]
+        result["user_feedback"] = {
+            "rating": rating,
+            "comment": comment,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        # Also update history record if it exists (matching by result_id in a real app)
+        # For simplicity, we just return the enriched result
+        return result

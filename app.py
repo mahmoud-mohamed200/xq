@@ -139,23 +139,30 @@ def detect_url():
 @app.route("/api/feedback", methods=["POST"])
 def feedback():
     """
-    Receive user feedback (rating and comments).
+    Receive user feedback and return the combined result JSON.
     """
     data = request.get_json()
-    if not data or "rating" not in data:
-        return jsonify({"error": "Rating is required", "success": False}), 400
-
+    result_id = data.get("result_id")
     rating = data.get("rating")
     comment = data.get("comment", "")
     
-    # Log the feedback (in a real app, this would go to a database or email)
-    print(f"\n[USER FEEDBACK] Rating: {rating}/5 | Comment: {comment}")
-    
-    # Trigger webhook with feedback if configured
-    if EXTERNAL_WEBHOOK_URL:
-        threading.Thread(target=_fire_webhook, args=({"type": "feedback", "rating": rating, "comment": comment},)).start()
+    if not result_id or rating is None:
+        return jsonify({"error": "result_id and rating are required", "success": False}), 400
 
-    return jsonify({"success": True, "message": "Feedback received!"})
+    # Update history in agent
+    updated_result = agent.update_result_with_feedback(result_id, rating, comment)
+    
+    if not updated_result:
+        return jsonify({"error": "Result ID not found", "success": False}), 404
+
+    # Log the feedback
+    print(f"\n[USER FEEDBACK] ID: {result_id} | Rating: {rating}/5 | Comment: {comment}")
+    
+    # Trigger webhook with the FULL updated result
+    if EXTERNAL_WEBHOOK_URL:
+        threading.Thread(target=_fire_webhook, args=(updated_result,)).start()
+
+    return jsonify(updated_result)
 
 
 @app.route("/api/history", methods=["GET"])
