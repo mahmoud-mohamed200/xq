@@ -266,9 +266,10 @@ class SkinDetectionAgent:
             # Additional penalty for variety of conditions (diversity of issues)
             total_penalty += (len(unique_conditions) - 1) * 3 if len(unique_conditions) > 1 else 0
             
-            health_score = max(10, min(100, int(100 - total_penalty)))
+            # Max score capped at 95 as requested
+            health_score = max(10, min(95, int(100 - total_penalty)))
         else:
-            health_score = 100
+            health_score = 95
 
         # Generate overall recommendation
         if health_score >= 80:
