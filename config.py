@@ -20,7 +20,7 @@ EXTERNAL_WEBHOOK_URL = "https://webhook.site/2d1f686c-eefa-43af-9a2b-12549c922ae
 MODEL_ID = f"{ROBOFLOW_PROJECT}/{ROBOFLOW_MODEL_VERSION}"
 
 # Detection Settings
-CONFIDENCE_THRESHOLD = 27  # Minimum confidence percentage
+CONFIDENCE_THRESHOLD = 24  # Minimum confidence percentage 
 OVERLAP_THRESHOLD = 30     # NMS overlap threshold percentage
 
 # Skin condition classes and their metadata
