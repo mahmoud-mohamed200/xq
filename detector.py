@@ -247,12 +247,12 @@ class SkinDetectionAgent:
         total_detections = len(detections)
         unique_conditions = list(condition_counts.keys())
 
-        # Calculate overall skin health score (Base 100 deduction system)
+        # Calculate overall skin health score (Base 95 deduction system)
         severity_penalties = {
-            "خفيف": 1.5,      # Mild
-            "متوسط": 4.5,     # Moderate
-            "شديد": 10.0,     # Severe
-            "unknown": 2.5    # Fallback
+            "خفيف": 3.0,      # Mild
+            "متوسط": 8.0,     # Moderate
+            "شديد": 20.0,     # Severe
+            "unknown": 5.0    # Fallback
         }
         
         if detections:
@@ -260,14 +260,15 @@ class SkinDetectionAgent:
             for d in detections:
                 # Deduction = severity_weight * confidence_factor
                 conf_factor = d["confidence"] / 100.0
-                penalty = severity_penalties.get(d["severity"], 2.5) * conf_factor
+                penalty = severity_penalties.get(d["severity"], 5.0) * conf_factor
                 total_penalty += penalty
             
             # Additional penalty for variety of conditions (diversity of issues)
-            total_penalty += (len(unique_conditions) - 1) * 3 if len(unique_conditions) > 1 else 0
+            if len(unique_conditions) > 1:
+                total_penalty += (len(unique_conditions) - 1) * 5
             
-            # Max score capped at 95 as requested
-            health_score = max(10, min(95, int(100 - total_penalty)))
+            # Calculate from base 95 so any issue reduces the score immediately
+            health_score = max(5, int(95 - total_penalty))
         else:
             health_score = 95
 
