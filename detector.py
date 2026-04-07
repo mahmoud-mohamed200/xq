@@ -161,48 +161,194 @@ class SkinDetectionAgent:
         except Exception as e:
             return {"error": str(e), "success": False}
 
-    def _generate_diet_plan(self, unique_conditions: list, age: str = None, skin_type: str = None) -> str:
-        """Call Gemini to generate a diet plan based on detected skin conditions and user profile."""
+    def _load_products(self) -> list:
+        """Load and parse product catalog from markdown file."""
+        import glob
+        import re
+        # Use glob to handle the special character in the filename
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        files = glob.glob(os.path.join(current_dir, "_XQ*Pharma*.md"))
+        
+        if not files:
+            print("[SkinAgent] Product catalog not found.")
+            return []
+        
+        try:
+            with open(files[0], "r", encoding="utf-8") as f:
+                content = f.read()
+            
+            # Simple splitter for products (---)
+            sections = content.split("---")
+            products = []
+            for sect in sections:
+                if not sect.strip(): continue
+                
+                # Extract Title (first non-empty line)
+                lines = [l.strip() for l in sect.split("\n") if l.strip()]
+                if not lines: continue
+                name = lines[0].replace("#", "").strip()
+                
+                # Extract ID
+                id_match = re.search(r"\*\*ID:\*\*\s*(.*)", sect)
+                pid = id_match.group(1).strip() if id_match else ""
+                
+                # Extract Description
+                desc_match = re.search(r"\*\*Description:\*\*\s*(.*)", sect)
+                desc = desc_match.group(1).strip() if desc_match else ""
+                
+                # Extract Link
+                link_match = re.search(r"\[Link\]\((.*?)\)", sect)
+                link = link_match.group(1).strip() if link_match else ""
+                
+                if name and (desc or link):
+                    products.append({
+                        "name": name,
+                        "id": pid,
+                        "description": desc,
+                        "link": link
+                    })
+            
+            print(f"[SkinAgent] Loaded {len(products)} products from catalog.")
+            return products
+        except Exception as e:
+            print(f"[SkinAgent] Error loading products: {e}")
+            return []
+
+    def _generate_diet_and_products(self, unique_conditions: list, age: str = None, skin_type: str = None) -> tuple:
+        """Call Gemini to generate a diet plan and product recommendations."""
         if not self._llm:
-            return "مفتاح API الخاص بـ Gemini مفقود في config.py. يرجى إضافته للحصول على خطة غذائية بالذكاء الاصطناعي."
+            return "مفتاح API الخاص بـ Gemini مفقود في config.py.", []
         
         if not unique_conditions:
-            return "لم يتم اكتشاف أي مشاكل جلدية. حافظ على نظامك الغذائي الصحي الحالي للحفاظ على نضارة بشرتك."
+            return "لم يتم اكتشاف أي مشاكل جلدية. حافظ على نظامك الغذائي الصحي الحالي.", []
+
+        products_catalog = self._load_products()
+        catalog_str = ""
+        for p in products_catalog:
+            catalog_str += f"- {p['name']}: {p['description']} (ID: {p['id']})\n"
 
         condition_names = ", ".join(unique_conditions)
-        
-        # Build user profile string
         profile_parts = []
-        if age:
-            profile_parts.append(f"يبلغ من العمر {age} عاماً")
-        if skin_type:
-            profile_parts.append(f"نوع بشرته: {skin_type}")
-            
-        profile_context = ""
-        if profile_parts:
-            profile_context = f"معلومات المستخدم: {' و '.join(profile_parts)}."
+        if age: profile_parts.append(f"يبلغ من العمر {age} عاماً")
+        if skin_type: profile_parts.append(f"نوع بشرته: {skin_type}")
+        profile_context = f"معلومات المستخدم: {' و '.join(profile_parts)}." if profile_parts else ""
 
         prompt = f"""
         يعاني المستخدم من الحالات الجلدية التالية: {condition_names}.
         {profile_context}
-        بصفتك خبير تغذية وأمراض جلدية، قم بإعداد خطة غذائية موجزة (بين 2 إلى 4 نقاط كحد أقصى).
-        اذكر الأطعمة التي ينصح بتناولها والأطعمة التي يجب تجنبها لتحسين هذه الحالات المحددة.
-        يجب أن تكون التوصيات دقيقة وعلمية ومباشرة.
-        اكتب باللغة العربية. استخدم التنسيق النقطي (Bullet points).
-        لا تكتب مقدمات أو خاتمات طويلة، ادخل في صلب الموضوع فوراً.
+        
+        بصفتك خبير تغذية وأمراض جلدية، قم بمهمتين:
+        1. إعداد خطة غذائية موجزة (2-4 نقاط). اذكر الأطعمة التي ينصح بها والتي يجب تجنبها.
+        2. اختر بحد أقصى 3 منتجات مناسبة تمامًا لهذه الحالات من كتالوج منتجات XQ Pharma المرفق أدناه.
+        
+        الكتالوج:
+        {catalog_str}
+        
+        يجب أن يكون الرد بتنسيق JSON حصرياً كما يلي:
+        {{
+            "diet_plan": "نص الخطة الغذائية بالعربية هنا...",
+            "recommendations": [
+                {{
+                    "product_name": "اسم المنتج كما هو في الكتالوج",
+                    "reason_ar": "لماذا هذا المنتج مناسب لهذه الحالة بالعربية",
+                    "id": "معرف المنتج ID"
+                }}
+            ]
+        }}
+        
+        اكتب باللغة العربية. تأكد من أن الرد JSON صالح.
         """
         
-        try:
-            response = self._llm.models.generate_content(
-                model='gemini-2.5-flash-lite',
-                contents=prompt
-            )
-            return response.text.strip()
-        except Exception as e:
-            error_str = str(e)
-            if '429' in error_str or 'RESOURCE_EXHAUSTED' in error_str:
-                return "⚠️ تم تجاوز الحد اليومي لطلبات الذكاء الاصطناعي. يرجى المحاولة مرة أخرى غداً أو ترقية خطة Gemini API."
-            return f"حدث خطأ أثناء الاتصال بالذكاء الاصطناعي: {error_str}"
+        # Try multiple models that were confirmed to work in diagnostic tests
+        models_to_try = ['gemini-flash-latest', 'gemini-2.5-flash']
+        
+        def normalize(s):
+            """Normalize string for better matching (lowercase, strip special spaces)."""
+            import re
+            if not s: return ""
+            # Replace narrow no-break space (u202f) and other whitespace
+            s = s.replace("\u202f", " ").replace("\u00a0", " ")
+            s = re.sub(r"\s+", " ", s).strip().lower()
+            return s
+
+        last_error = ""
+        for model_name in models_to_try:
+            try:
+                print(f"[SkinAgent] Attempting LLM with {model_name}...")
+                response = self._llm.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config={
+                        'response_mime_type': 'application/json'
+                    }
+                )
+                data = json.loads(response.text.strip())
+                
+                diet_plan = data.get("diet_plan", "")
+                recs = data.get("recommendations", [])
+                
+                # Enrich recommendations with links from catalog
+                final_recs = []
+                for r in recs:
+                    req_id = normalize(r.get("id", ""))
+                    req_name = normalize(r.get("product_name", ""))
+                    
+                    catalog_item = None
+                    for p in products_catalog:
+                        p_id = normalize(p.get("id", ""))
+                        p_name = normalize(p.get("name", ""))
+                        if (req_id and req_id in p_id) or (req_name and req_name in p_name) or (p_name and p_name in req_name):
+                            catalog_item = p
+                            break
+                    
+                    if catalog_item:
+                        name_lower = catalog_item["name"].lower()
+                        icon = "🧴" # Default
+                        if "cleanser" in name_lower or "غسول" in catalog_item["name"]: icon = "🧼"
+                        elif "serum" in name_lower or "سيروم" in catalog_item["name"]: icon = "🧪"
+                        elif "shampoo" in name_lower or "شامبو" in catalog_item["name"]: icon = "🚿"
+                        elif "mask" in name_lower or "ماسك" in catalog_item["name"]: icon = "🎭"
+                        elif "gel" in name_lower or "جل" in catalog_item["name"]: icon = "💧"
+                        
+                        # Load real product images if available
+                        image_url = ""
+                        try:
+                            # Use absolute path relative to this file
+                            base_dir = os.path.dirname(os.path.abspath(__file__))
+                            images_path = os.path.join(base_dir, "product_images.json")
+                            with open(images_path, "r", encoding="utf-8") as f:
+                                img_map = json.load(f)
+                                image_url = img_map.get(catalog_item["name"], "")
+                        except Exception as e:
+                            print(f"[SkinAgent] Error loading image for {catalog_item['name']}: {e}")
+                            pass
+
+                        final_recs.append({
+                            "name": catalog_item["name"],
+                            "reason": r.get("reason_ar", ""),
+                            "link": catalog_item["link"],
+                            "icon": icon,
+                            "image_url": image_url,
+                            "brand_logo": "xq-logo.avif"
+                        })
+                
+                print(f"[SkinAgent] ✅ Success with {model_name}. Matched {len(final_recs)} products.")
+                return diet_plan, final_recs
+                
+            except Exception as e:
+                last_error = str(e)
+                print(f"[SkinAgent] ❌ Error with {model_name}: {last_error}")
+                if "404" in last_error or "429" in last_error or "503" in last_error:
+                    time.sleep(1) # Brief wait before trying fallback
+                    continue
+                break # Non-recoverable error
+        
+        # If we get here, all models failed
+        if "429" in last_error or "RESOURCE_EXHAUSTED" in last_error:
+            friendly_msg = "⚠️ تم تجاوز الحد اليومي لطلبات الذكاء الاصطناعي (Gemini Quota). يمكنك رؤية نتائج التحليل الموضعية أدناه، ولكن التوصيات الغذائية والمنتجات ستتوفر لاحقاً."
+            return friendly_msg, []
+            
+        return "حدث خطأ بسيط أثناء تحضير التوصيات المخصصة. يرجى المحاولة لاحقاً.", []
 
     def _analyze_results(self, raw_result: dict, inference_time: float, age: str = None, skin_type: str = None) -> dict:
         """
@@ -302,8 +448,8 @@ class SkinDetectionAgent:
                     "name_ar": d.get("name_ar", d["class"])
                 }
 
-        # Generate Dynamic LLM Diet Plan
-        llm_diet_plan = self._generate_diet_plan(unique_conditions, age, skin_type)
+        # Generate Dynamic LLM Diet and Product Recommendations
+        llm_diet_plan, recommended_products = self._generate_diet_and_products(unique_conditions, age, skin_type)
 
         result_id = str(uuid.uuid4())
         
@@ -320,6 +466,7 @@ class SkinDetectionAgent:
             "detections": detections,
             "condition_summary": all_tips,
             "llm_diet_plan": llm_diet_plan,
+            "recommended_products": recommended_products,
             "model_id": MODEL_ID,
             "summary": {
                 "total": total_detections,

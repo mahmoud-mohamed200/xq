@@ -56,6 +56,8 @@ const els = {
     tipsList: $('#tips-list'),
     foodCard: $('#food-card'),
     foodContent: $('#food-content'),
+    productsCard: $('#products-card'),
+    productsList: $('#products-list'),
     btnNewScan: $('#btn-new-scan'),
     // Sections
     uploadSection: $('#upload-section'),
@@ -326,8 +328,46 @@ function showResults(data) {
         els.foodCard.style.display = 'none';
     }
 
+    // Render Recommended Products
+    if (data.recommended_products && data.recommended_products.length > 0) {
+        renderProducts(data.recommended_products);
+        els.productsCard.style.display = 'block';
+    } else {
+        els.productsCard.style.display = 'none';
+    }
+
     // Scroll to results
     els.resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderProducts(products) {
+    let html = '';
+    products.forEach(p => {
+        const logoHtml = `<img src="xq-logo.avif" class="product-brand-badge" alt="XQ Logo">`;
+        const productImgHtml = p.image_url ? `
+            <div class="product-image-container">
+                <img src="${p.image_url}" class="product-real-img" alt="${p.name}">
+            </div>
+        ` : `<div class="product-icon">${p.icon || '🧴'}</div>`;
+
+        html += `
+            <div class="product-card animate-in">
+                ${logoHtml}
+                ${productImgHtml}
+                <div class="product-name">${p.name}</div>
+                <div class="product-reason">${p.reason}</div>
+                <a href="${p.link}" target="_blank" class="btn btn-view-product btn-glow">
+                    <span>مشاهدة المنتج</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                </a>
+            </div>
+        `;
+    });
+    els.productsList.innerHTML = html;
 }
 
 function animateScore(targetScore) {
@@ -501,6 +541,7 @@ els.btnNewScan.addEventListener('click', () => {
     els.ratingComment.classList.remove('hidden');
     els.btnSubmitRating.classList.remove('hidden');
     els.ratingMessage.classList.add('hidden');
+    els.productsCard.style.display = 'none';
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
